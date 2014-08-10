@@ -183,7 +183,7 @@ def get_deposits(request, name):
     if not deposits.exists():
         # avoid populating queryset cache if there's no hits anyways
         return _JSONResponse([])
-    response_deposits = [{'name': dep.student_name, 'id': dep.id} for dep in deposits.iterator()]
+    response_deposits = [{'name': dep.student_name, 'id': dep.id, 'date': dep.date} for dep in deposits.iterator()]
     return _JSONResponse(response_deposits)
 
 def delete_deposit(request, deposit_id):

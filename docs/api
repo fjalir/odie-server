@@ -57,4 +57,5 @@ class printjob:
 
 class deposit:
   name : string
+  date: date
   id: int
