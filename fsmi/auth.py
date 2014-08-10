@@ -10,7 +10,8 @@ class AuthBackend(object):
         except User.DoesNotExist:
             return None
 
-        if crypt.crypt(password.encode('utf8'), user.pw_hash) == user.pw_hash:
+        if user.has_permission('homepage_login') and\
+           crypt.crypt(password.encode('utf8'), user.pw_hash) == user.pw_hash:
             return user
         else:
             return None
