@@ -6,6 +6,9 @@
 GET /data/lectures : [lecture]
 GET /data/lectures/<lecture>/documents : [document]
 
+GET /data/examinants : [examinant]
+GET /data/examinants/<examinant>/documents : [document]
+
 POST /data/carts/<string> : [document.id] -> none
 
 POST /data/login : credentials -> auth
@@ -23,6 +26,9 @@ DELETE /data/deposits/<deposit.id> : none
 
 
 class lecture:
+  name: string
+
+class examinant:
   name: string
 
 class document:

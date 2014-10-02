@@ -62,6 +62,25 @@ ORDER BY name
 def documents_of_lecture(request, lecture):
     return _JSONResponse(_exec_prfproto('SELECT * FROM documents WHERE %(lecture)s = ANY(lectures)', lecture=urllib.unquote(lecture)))
 
+@require_GET
+def examinants(request):
+    return _JSONResponse(_exec_prfproto('''
+SELECT examinant
+FROM (
+  SELECT prof AS examinant
+  FROM klausuren
+ UNION ALL
+  SELECT dozent AS examinant
+  FROM pruefungvorlesung
+) AS examinants
+GROUP BY examinant
+ORDER BY examinant
+                        '''))
+
+@require_GET
+def documents_of_examinant(request, examinant):
+    return _JSONResponse(_exec_prfproto('SELECT * FROM documents WHERE %(examinant)s = ANY(examinants)', examinant=urllib.unquote(examinant)))
+
 def _decode_json_body(request):
     if request.META['CONTENT_TYPE'] != 'application/json; charset=UTF-8':
         raise Exception('Not a JSON request: ' + request.META['CONTENT_TYPE'])
