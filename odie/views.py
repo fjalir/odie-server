@@ -173,7 +173,7 @@ def print_job(request):
     price = 10 * (price/10 + (1 if price % 10 else 0))
 
     if exams:
-        settings.do_print(['external', request.user.username, job['coverText'], ''] + [exam.file_path for exam in exams])
+        settings.do_print([job['printer'], request.user.username, job['coverText'], ''] + [exam.file_path for exam in exams])
         prfproto.models.AccountingLog(account_id=2222,
                                       amount=price / 100.0,
                                       description='Klausur-/Protokolldruck',
