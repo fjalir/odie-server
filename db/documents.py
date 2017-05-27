@@ -143,6 +143,14 @@ class Document(sqla.Model):
     def price(self):
         return config.FS_CONFIG['PRICE_PER_PAGE'] * self.number_of_pages
 
+class DocumentReport(sqla.Model):
+    __tablename__ = "reported_documents"
+    __table_args__ = config.documents_table_args
+
+    id = Column(sqla.Integer, primary_key=True)
+    document_id = sqla.relationship('Document')
+    report_time = Column(sqla.DateTime(timezone=True))
+    reason = Column(sqla.String)
 
 folder_examinants = sqla.Table('folder_examinants',
         Column('folder_id', sqla.Integer, sqla.ForeignKey('documents.folders.id', ondelete='CASCADE')),
