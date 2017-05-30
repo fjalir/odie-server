@@ -126,6 +126,7 @@ class Document(sqla.Model):
     lectures = sqla.relationship('Lecture', secondary=lecture_docs, back_populates='documents')
     examinants = sqla.relationship('Examinant', secondary=document_examinants, back_populates='documents')
     printed_in = sqla.relationship('Folder', secondary=folder_docs, back_populates='printed_docs')
+    reports = sqla.relationship("DocumentReport", lazy="select")
 
     @property
     def examinants_names(self):
@@ -143,12 +144,13 @@ class Document(sqla.Model):
     def price(self):
         return config.FS_CONFIG['PRICE_PER_PAGE'] * self.number_of_pages
 
+
 class DocumentReport(sqla.Model):
-    __tablename__ = "reported_documents"
+    __tablename__ = "document_reports"
     __table_args__ = config.documents_table_args
 
     id = Column(sqla.Integer, primary_key=True)
-    document_id = sqla.relationship('Document')
+    document_id = Column(sqla.Integer, sqla.ForeignKey('documents.documents.id'), index=True)
     report_time = Column(sqla.DateTime(timezone=True))
     reason = Column(sqla.String)
 

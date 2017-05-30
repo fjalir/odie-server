@@ -91,7 +91,7 @@ class ProtocolError(Exception):
 
 def is_valid(barcode):
     # see https://en.wikipedia.org/wiki/International_Article_Number_(EAN)#Calculation_of_checksum_digit
-    return not sum(int(barcode[i]) * (3 if i % 2 else 1) for i in range(13)) % 10
+    return len(str(barcode)) == 13 and not sum(int(barcode[i]) * (3 if i % 2 else 1) for i in range(13)) % 10
 
 def document_from_barcode(barcode):
     if not is_valid(barcode):

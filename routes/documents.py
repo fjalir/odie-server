@@ -11,13 +11,15 @@ from marshmallow import Schema, fields
 from marshmallow.validate import OneOf
 from sqlalchemy.orm import subqueryload
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import DataError
 from pytz import reference
 
 from .common import IdSchema, DocumentDumpSchema
 from odie import app, sqla, csrf, ClientError
 from login import login_required, get_user, is_kiosk, unauthorized
-from api_utils import endpoint, api_route, handle_client_errors, document_path, number_of_pages, save_file, serialize, event_stream
-from db.documents import Lecture, Document, Examinant
+from api_utils import endpoint, api_route, handle_client_errors, document_path, number_of_pages, save_file, serialize, event_stream, deserialize
+from db.documents import Lecture, Document, Examinant, DocumentReport
+from barcode.barcode import document_from_barcode, is_valid
 
 
 @app.route('/api/scanner/<location>/<int:id>')
@@ -111,6 +113,35 @@ class FullDocumentLoadSchema(DocumentLoadSchema):
 
 def _allowed_file(filename):
     return os.path.splitext(filename)[1] in config.SUBMISSION_ALLOWED_FILE_EXTENSIONS
+
+
+class DocumentReportSchema(IdSchema):
+    reason = fields.Str(required=True)
+
+
+@api_route('/api/document_report', methods=['POST'])
+@csrf.exempt
+@deserialize(DocumentReportSchema)
+def submit_document_report(data):
+    id_or_barcode = data.get("id")
+    reason = data.get("reason")
+    try:
+        doc = document_from_barcode(str(id_or_barcode)) if is_valid(str(id_or_barcode)) else Document.query.get(id_or_barcode)
+    except DataError as e:
+        raise ClientError('document not found')
+    if doc is None:
+        raise ClientError('document not found')
+    if reason is None or reason.isspace():
+        raise ClientError("no reason")
+
+    new_report = DocumentReport(
+        document_id=doc.id,
+        report_time=datetime.datetime.now(),
+        reason=reason
+    )
+
+    sqla.session.add(new_report)
+    sqla.session.commit()
 
 
 @api_route('/api/documents', methods=['POST'])
