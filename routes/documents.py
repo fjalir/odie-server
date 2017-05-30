@@ -131,7 +131,7 @@ def submit_document_report(data):
         raise ClientError('document not found')
     if doc is None:
         raise ClientError('document not found')
-    if reason is None or reason.isspace():
+    if reason is None or reason.isspace() or len(reason) == 0:
         raise ClientError("no reason")
 
     new_report = DocumentReport(
@@ -213,7 +213,7 @@ def submit_documents(validated):
 
     doc_type = data.get('document_type')
     student_name = data.get('student_name')
-    if student_name is None or student_name.isspace():
+    if student_name is None or student_name.isspace() or len(student_name) == 0:
         student_name = None
     deposit_return_eligible = student_name is not None
     early_document_eligible = student_name is not None and doc_type == 'oral' and any(lecture.early_document_eligible for lecture in lectures)
