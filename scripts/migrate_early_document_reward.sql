@@ -30,7 +30,7 @@ BEGIN
 	JOIN documents.lecture_docs AS jt ON jt.document_id = doc.id
 	JOIN documents.lectures AS lec ON jt.lecture_id = lec.id
 	WHERE doc.validation_time IS NOT NULL
-	AND doc.document_type = 'oral'
+	AND doc.document_type != 'written'
 	AND lec.id = lec_id
 	--and lec.validated = true
 	ORDER BY doc.validation_time ASC
