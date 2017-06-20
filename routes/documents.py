@@ -185,7 +185,7 @@ def submit_documents(validated):
     if student_name is None or student_name.isspace():
         student_name = None
     deposit_return_eligible = student_name is not None
-    early_document_eligible = student_name is not None and doc_type == 'oral' and any(lecture.early_document_eligible for lecture in lectures)
+    early_document_eligible = student_name is not None and doc_type != 'written' and any(lecture.early_document_eligible for lecture in lectures)
 
     new_doc = Document(
             department=data['department'],
